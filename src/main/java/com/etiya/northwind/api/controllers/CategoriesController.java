@@ -3,6 +3,7 @@ package com.etiya.northwind.api.controllers;
 import com.etiya.northwind.business.abstracts.CategoryService;
 import com.etiya.northwind.business.requests.categoryRequests.CreateCategoryRequest;
 import com.etiya.northwind.business.requests.categoryRequests.UpdateCategoryRequest;
+import com.etiya.northwind.business.responses.PageDataResponse;
 import com.etiya.northwind.business.responses.categories.CategoryListResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ public class CategoriesController {
         return this.categoryService.getAll();
     }
 
+
     @PostMapping("/add")
     public void add(@RequestBody @Valid CreateCategoryRequest createCategoryRequest){
         this.categoryService.add(createCategoryRequest);
@@ -44,4 +46,16 @@ public class CategoriesController {
     public CategoryListResponse getById(@PathVariable int categoryId){
         return this.categoryService.getById(categoryId);
     }
+
+    @GetMapping("/getByPage/{pageNumber}/{categoryAmountInPage}")
+    public PageDataResponse<CategoryListResponse> getByPage(int pageNumber, int categoryAmountInPage){
+        return this.categoryService.getByPage(pageNumber,categoryAmountInPage);
+    }
+
+    @GetMapping("/getByPageWithSorting/{pageNumber}/{categoryAmountInPage}/{fieldName}/{isAsc}")
+    public PageDataResponse<CategoryListResponse> getByPageWithSorting(int pageNumber, int categoryAmountInPage, String fieldName, boolean isAsc){
+        return this.categoryService.getByPageWithSorting(pageNumber,categoryAmountInPage,fieldName,isAsc);
+    }
+
+
 }

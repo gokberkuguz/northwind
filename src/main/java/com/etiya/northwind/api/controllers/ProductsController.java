@@ -3,6 +3,7 @@ package com.etiya.northwind.api.controllers;
 import com.etiya.northwind.business.abstracts.ProductService;
 import com.etiya.northwind.business.requests.productRequests.CreateProductRequest;
 import com.etiya.northwind.business.requests.productRequests.UpdateProductRequest;
+import com.etiya.northwind.business.responses.PageDataResponse;
 import com.etiya.northwind.business.responses.products.ProductListResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -43,5 +44,15 @@ public class ProductsController {
     @GetMapping("/getbyid/{productId}")
     public ProductListResponse getById(@PathVariable int productId){
         return this.productService.getById(productId);
+    }
+
+    @GetMapping("/getByPage/{pageNumber}/{productAmountInPage}")
+    public PageDataResponse<ProductListResponse> getByPage(int pageNumber, int productAmountInPage){
+        return this.productService.getByPage(pageNumber,productAmountInPage);
+    }
+
+    @GetMapping("/getByPageWithSorting/{pageNumber}/{productAmountInPage}/{fieldName}/{isAsc}")
+    public PageDataResponse<ProductListResponse> getByPageWithSorting(int pageNumber, int productAmountInPage, String fieldName, boolean isAsc){
+        return this.productService.getByPageWithSorting(pageNumber,productAmountInPage,fieldName,isAsc);
     }
 }

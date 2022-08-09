@@ -4,12 +4,20 @@ import com.etiya.northwind.business.abstracts.CategoryService;
 import com.etiya.northwind.business.requests.categoryRequests.CreateCategoryRequest;
 import com.etiya.northwind.business.requests.categoryRequests.UpdateCategoryRequest;
 import com.etiya.northwind.business.requests.employeeRequests.UpdateEmployeeRequest;
+import com.etiya.northwind.business.responses.PageDataResponse;
 import com.etiya.northwind.business.responses.categories.CategoryListResponse;
 import com.etiya.northwind.core.mapping.ModelMapperService;
 import com.etiya.northwind.dataAccess.abstracts.CategoryRepository;
 import com.etiya.northwind.entities.concretes.Category;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,5 +77,34 @@ public class CategoryManager implements CategoryService {
             System.out.println("Geçersiz Kategori ID");
         }
         return response;
+    }
+
+    @Override
+    public PageDataResponse<CategoryListResponse> getByPage(int pageNumber, int categoryAmountInPage) {
+        Pageable pageable = PageRequest.of(pageNumber-1,categoryAmountInPage);
+        Page<Category> pages = this.categoryRepository.findAllCategories(pageable);
+        List<CategoryListResponse> response =
+                pages.getContent().stream().map(category -> this.modelMapperService.forResponse().map(category, CategoryListResponse.class)).collect(Collectors.toList());
+
+        return new PageDataResponse<CategoryListResponse>(response,pages.getTotalPages(),pages.getTotalElements(), pageNumber);
+    }
+
+    @Override
+    public PageDataResponse<CategoryListResponse> getByPageWithSorting(int pageNumber, int categoryAmountInPage, String fieldName, boolean isAsc) {
+        if (Arrays.stream(Category.class.getDeclaredFields()).noneMatch(field -> field.getName().equals(fieldName))){
+            System.out.println("Field does not exist.");
+            return new PageDataResponse<>(new ArrayList<CategoryListResponse>(), 0, 0, 0);
+        }
+        Pageable pageable;
+        if (isAsc){
+            pageable = PageRequest.of(pageNumber-1,categoryAmountInPage, Sort.by(fieldName).ascending());
+        }else {
+            pageable = PageRequest.of(pageNumber-1,categoryAmountInPage, Sort.by(fieldName).descending());
+        }
+        Page<Category> pages = this.categoryRepository.findAllCategories(pageable);
+        List<CategoryListResponse> response =
+                pages.getContent().stream().map(category -> this.modelMapperService.forResponse().map(category, CategoryListResponse.class)).collect(Collectors.toList());
+
+        return new PageDataResponse<CategoryListResponse>(response,pages.getTotalPages(),pages.getTotalElements(), pageNumber);
     }
 }

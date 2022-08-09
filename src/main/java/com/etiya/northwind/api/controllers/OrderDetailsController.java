@@ -1,12 +1,10 @@
 package com.etiya.northwind.api.controllers;
 
 import com.etiya.northwind.business.abstracts.OrderDetailsService;
-import com.etiya.northwind.business.abstracts.OrderService;
 import com.etiya.northwind.business.requests.orderDetailRequests.CreateOrderDetailRequest;
 import com.etiya.northwind.business.requests.orderDetailRequests.UpdateOrderDetailRequest;
+import com.etiya.northwind.business.responses.PageDataResponse;
 import com.etiya.northwind.business.responses.orderDetails.OrderDetailsListResponse;
-import com.etiya.northwind.business.responses.orderDetails.OrderDetailsListResponse;
-import com.etiya.northwind.business.responses.orders.OrderListResponse;
 import com.etiya.northwind.entities.concretes.OrderDetailsId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -47,5 +45,15 @@ public class OrderDetailsController {
     @GetMapping("/getbyid/{orderDetailsId}")
     public OrderDetailsListResponse getById(@PathVariable OrderDetailsId orderDetailsId){
         return this.orderDetailsService.getById(orderDetailsId);
+    }
+
+    @GetMapping("/getByPage/{pageNumber}/{orderDetailsAmountInPage}")
+    public PageDataResponse<OrderDetailsListResponse> getByPage(int pageNumber, int orderDetailsAmountInPage){
+        return this.orderDetailsService.getByPage(pageNumber,orderDetailsAmountInPage);
+    }
+
+    @GetMapping("/getByPageWithSorting/{pageNumber}/{orderDetailsAmountInPage}/{fieldName}/{isAsc}")
+    public PageDataResponse<OrderDetailsListResponse> getByPageWithSorting(int pageNumber, int orderDetailsAmountInPage, String fieldName, boolean isAsc){
+        return this.orderDetailsService.getByPageWithSorting(pageNumber,orderDetailsAmountInPage,fieldName,isAsc);
     }
 }

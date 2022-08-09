@@ -3,11 +3,16 @@ package com.etiya.northwind.business.concretes;
 import com.etiya.northwind.business.abstracts.CustomerService;
 import com.etiya.northwind.business.requests.customerRequests.CreateCustomerRequest;
 import com.etiya.northwind.business.requests.customerRequests.UpdateCustomerRequest;
+import com.etiya.northwind.business.responses.PageDataResponse;
 import com.etiya.northwind.business.responses.customers.CustomerListResponse;
 import com.etiya.northwind.core.mapping.ModelMapperService;
 import com.etiya.northwind.dataAccess.abstracts.CustomerRepository;
 import com.etiya.northwind.entities.concretes.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,5 +71,30 @@ public class CustomerManager implements CustomerService {
             System.out.println("Gecersiz Kullanici ID");
         }
         return response;
+    }
+
+    @Override
+    public PageDataResponse<CustomerListResponse> getByPage(int pageNumber, int customerAmountInPage) {
+        Pageable pageable = PageRequest.of(pageNumber-1,customerAmountInPage);
+        Page<Customer> pages = this.customerRepository.findAllCustomers(pageable);
+        List<CustomerListResponse> response =
+                pages.getContent().stream().map(customer -> this.modelMapperService.forResponse().map(customer, CustomerListResponse.class)).collect(Collectors.toList());
+
+        return new PageDataResponse<CustomerListResponse>(response,pages.getTotalPages(),pages.getTotalElements(), pageNumber);
+    }
+
+    @Override
+    public PageDataResponse<CustomerListResponse> getByPageWithSorting(int pageNumber, int customerAmountInPage, String fieldName, boolean isAsc) {
+        Pageable pageable;
+        if (isAsc){
+            pageable = PageRequest.of(pageNumber-1,customerAmountInPage, Sort.by(fieldName).ascending());
+        }else {
+            pageable = PageRequest.of(pageNumber-1,customerAmountInPage, Sort.by(fieldName).descending());
+        }
+        Page<Customer> pages = this.customerRepository.findAllCustomers(pageable);
+        List<CustomerListResponse> response =
+                pages.getContent().stream().map(customer -> this.modelMapperService.forResponse().map(customer, CustomerListResponse.class)).collect(Collectors.toList());
+
+        return new PageDataResponse<CustomerListResponse>(response,pages.getTotalPages(),pages.getTotalElements(), pageNumber);
     }
 }

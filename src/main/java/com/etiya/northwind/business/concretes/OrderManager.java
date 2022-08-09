@@ -3,11 +3,16 @@ package com.etiya.northwind.business.concretes;
 import com.etiya.northwind.business.abstracts.OrderService;
 import com.etiya.northwind.business.requests.orderRequests.CreateOrderRequest;
 import com.etiya.northwind.business.requests.orderRequests.UpdateOrderRequest;
+import com.etiya.northwind.business.responses.PageDataResponse;
 import com.etiya.northwind.business.responses.orders.OrderListResponse;
 import com.etiya.northwind.core.mapping.ModelMapperService;
 import com.etiya.northwind.dataAccess.abstracts.OrderRepository;
 import com.etiya.northwind.entities.concretes.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,6 +75,31 @@ public class OrderManager implements OrderService {
             System.out.println("Gecersiz Siparis ID");
         }
         return response;
+    }
+
+    @Override
+    public PageDataResponse<OrderListResponse> getByPage(int pageNumber, int orderAmountInPage) {
+        Pageable pageable = PageRequest.of(pageNumber-1,orderAmountInPage);
+        Page<Order> pages = this.orderRepository.findAllOrders(pageable);
+        List<OrderListResponse> response =
+                pages.getContent().stream().map(order -> this.modelMapperService.forResponse().map(order, OrderListResponse.class)).collect(Collectors.toList());
+
+        return new PageDataResponse<OrderListResponse>(response,pages.getTotalPages(),pages.getTotalElements(), pageNumber);
+    }
+
+    @Override
+    public PageDataResponse<OrderListResponse> getByPageWithSorting(int pageNumber, int orderAmountInPage, String fieldName, boolean isAsc) {
+        Pageable pageable;
+        if (isAsc){
+            pageable = PageRequest.of(pageNumber-1,orderAmountInPage, Sort.by(fieldName).ascending());
+        }else {
+            pageable = PageRequest.of(pageNumber-1,orderAmountInPage, Sort.by(fieldName).descending());
+        }
+        Page<Order> pages = this.orderRepository.findAllOrders(pageable);
+        List<OrderListResponse> response =
+                pages.getContent().stream().map(order -> this.modelMapperService.forResponse().map(order, OrderListResponse.class)).collect(Collectors.toList());
+
+        return new PageDataResponse<OrderListResponse>(response,pages.getTotalPages(),pages.getTotalElements(), pageNumber);
     }
 }
 

@@ -3,12 +3,16 @@ package com.etiya.northwind.business.concretes;
 import com.etiya.northwind.business.abstracts.SupplierService;
 import com.etiya.northwind.business.requests.supplierRequests.CreateSupplierRequest;
 import com.etiya.northwind.business.requests.supplierRequests.UpdateSupplierRequest;
+import com.etiya.northwind.business.responses.PageDataResponse;
 import com.etiya.northwind.business.responses.suppliers.SupplierListResponse;
 import com.etiya.northwind.core.mapping.ModelMapperService;
 import com.etiya.northwind.dataAccess.abstracts.SupplierRepository;
-import com.etiya.northwind.entities.concretes.Product;
 import com.etiya.northwind.entities.concretes.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,6 +71,31 @@ public class SupplierManager implements SupplierService {
             System.out.println("Gecersiz Tedarikçi ID");
         }
         return response;
+    }
+
+    @Override
+    public PageDataResponse<SupplierListResponse> getByPage(int pageNumber, int supplierAmountInPage) {
+        Pageable pageable = PageRequest.of(pageNumber-1,supplierAmountInPage);
+        Page<Supplier> pages = this.supplierRepository.findAllSuppliers(pageable);
+        List<SupplierListResponse> response =
+                pages.getContent().stream().map(supplier -> this.modelMapperService.forResponse().map(supplier, SupplierListResponse.class)).collect(Collectors.toList());
+
+        return new PageDataResponse<SupplierListResponse>(response,pages.getTotalPages(),pages.getTotalElements(), pageNumber);
+    }
+
+    @Override
+    public PageDataResponse<SupplierListResponse> getByPageWithSorting(int pageNumber, int supplierAmountInPage, String fieldName, boolean isAsc) {
+        Pageable pageable;
+        if (isAsc){
+            pageable = PageRequest.of(pageNumber-1,supplierAmountInPage, Sort.by(fieldName).ascending());
+        }else {
+            pageable = PageRequest.of(pageNumber-1,supplierAmountInPage, Sort.by(fieldName).descending());
+        }
+        Page<Supplier> pages = this.supplierRepository.findAllSuppliers(pageable);
+        List<SupplierListResponse> response =
+                pages.getContent().stream().map(supplier -> this.modelMapperService.forResponse().map(supplier, SupplierListResponse.class)).collect(Collectors.toList());
+
+        return new PageDataResponse<SupplierListResponse>(response,pages.getTotalPages(),pages.getTotalElements(), pageNumber);
     }
 }
 

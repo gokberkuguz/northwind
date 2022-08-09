@@ -4,6 +4,7 @@ import com.etiya.northwind.business.abstracts.ProductService;
 import com.etiya.northwind.business.abstracts.SupplierService;
 import com.etiya.northwind.business.requests.supplierRequests.CreateSupplierRequest;
 import com.etiya.northwind.business.requests.supplierRequests.UpdateSupplierRequest;
+import com.etiya.northwind.business.responses.PageDataResponse;
 import com.etiya.northwind.business.responses.suppliers.SupplierListResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +45,15 @@ public class SuppliersController {
     @GetMapping("/getbyid/{supplierId}")
     public SupplierListResponse getById(@PathVariable int supplierId){
         return this.supplierService.getById(supplierId);
+    }
+
+    @GetMapping("/getByPage/{pageNumber}/{supplierAmountInPage}")
+    public PageDataResponse<SupplierListResponse> getByPage(int pageNumber, int supplierAmountInPage){
+        return this.supplierService.getByPage(pageNumber,supplierAmountInPage);
+    }
+
+    @GetMapping("/getByPageWithSorting/{pageNumber}/{supplierAmountInPage}/{fieldName}/{isAsc}")
+    public PageDataResponse<SupplierListResponse> getByPageWithSorting(int pageNumber, int supplierAmountInPage, String fieldName, boolean isAsc){
+        return this.supplierService.getByPageWithSorting(pageNumber,supplierAmountInPage,fieldName,isAsc);
     }
 }

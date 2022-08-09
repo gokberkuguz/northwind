@@ -4,6 +4,7 @@ package com.etiya.northwind.api.controllers;
 import com.etiya.northwind.business.abstracts.OrderService;
 import com.etiya.northwind.business.requests.orderRequests.CreateOrderRequest;
 import com.etiya.northwind.business.requests.orderRequests.UpdateOrderRequest;
+import com.etiya.northwind.business.responses.PageDataResponse;
 import com.etiya.northwind.business.responses.orders.OrderListResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +45,15 @@ public class OrdersController {
     @GetMapping("/getbyid/{orderId}")
     public OrderListResponse getById(@PathVariable int orderId){
         return this.orderService.getById(orderId);
+    }
+
+    @GetMapping("/getByPage/{pageNumber}/{orderAmountInPage}")
+    public PageDataResponse<OrderListResponse> getByPage(int pageNumber, int orderAmountInPage){
+        return this.orderService.getByPage(pageNumber,orderAmountInPage);
+    }
+
+    @GetMapping("/getByPageWithSorting/{pageNumber}/{orderAmountInPage}/{fieldName}/{isAsc}")
+    public PageDataResponse<OrderListResponse> getByPageWithSorting(int pageNumber, int orderAmountInPage, String fieldName, boolean isAsc){
+        return this.orderService.getByPageWithSorting(pageNumber,orderAmountInPage,fieldName,isAsc);
     }
 }

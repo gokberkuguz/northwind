@@ -3,12 +3,16 @@ package com.etiya.northwind.business.concretes;
 import com.etiya.northwind.business.abstracts.ProductService;
 import com.etiya.northwind.business.requests.productRequests.CreateProductRequest;
 import com.etiya.northwind.business.requests.productRequests.UpdateProductRequest;
-import com.etiya.northwind.business.responses.orders.OrderListResponse;
+import com.etiya.northwind.business.responses.PageDataResponse;
 import com.etiya.northwind.business.responses.products.ProductListResponse;
 import com.etiya.northwind.core.mapping.ModelMapperService;
 import com.etiya.northwind.dataAccess.abstracts.ProductRepository;
 import com.etiya.northwind.entities.concretes.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,5 +71,30 @@ public class ProductManager implements ProductService {
             System.out.println("Gecersiz Ürün ID");
         }
         return response;
+    }
+
+    @Override
+    public PageDataResponse<ProductListResponse> getByPage(int pageNumber, int productAmountInPage) {
+        Pageable pageable = PageRequest.of(pageNumber-1,productAmountInPage);
+        Page<Product> pages = this.productRepository.findAllProducts(pageable);
+        List<ProductListResponse> response =
+                pages.getContent().stream().map(product -> this.modelMapperService.forResponse().map(product, ProductListResponse.class)).collect(Collectors.toList());
+
+        return new PageDataResponse<ProductListResponse>(response,pages.getTotalPages(),pages.getTotalElements(), pageNumber);
+    }
+
+    @Override
+    public PageDataResponse<ProductListResponse> getByPageWithSorting(int pageNumber, int productAmountInPage, String fieldName, boolean isAsc) {
+        Pageable pageable;
+        if (isAsc){
+            pageable = PageRequest.of(pageNumber-1,productAmountInPage, Sort.by(fieldName).ascending());
+        }else {
+            pageable = PageRequest.of(pageNumber-1,productAmountInPage, Sort.by(fieldName).descending());
+        }
+        Page<Product> pages = this.productRepository.findAllProducts(pageable);
+        List<ProductListResponse> response =
+                pages.getContent().stream().map(product -> this.modelMapperService.forResponse().map(product, ProductListResponse.class)).collect(Collectors.toList());
+
+        return new PageDataResponse<ProductListResponse>(response,pages.getTotalPages(),pages.getTotalElements(), pageNumber);
     }
 }
