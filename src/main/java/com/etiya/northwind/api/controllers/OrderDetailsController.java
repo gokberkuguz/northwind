@@ -27,6 +27,7 @@ public class OrderDetailsController {
         return this.orderDetailsService.getAll();
     }
 
+/*
     @PostMapping("/add")
     public void add(@RequestBody @Valid CreateOrderDetailRequest createOrderDetailRequest){
         this.orderDetailsService.add(createOrderDetailRequest);
@@ -46,6 +47,7 @@ public class OrderDetailsController {
     public OrderDetailsListResponse getById(@PathVariable OrderDetailsId orderDetailsId){
         return this.orderDetailsService.getById(orderDetailsId);
     }
+*/
 
     @GetMapping("/getByPage/{pageNumber}/{orderDetailsAmountInPage}")
     public PageDataResponse<OrderDetailsListResponse> getByPage(int pageNumber, int orderDetailsAmountInPage){
