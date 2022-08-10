@@ -31,4 +31,7 @@ public class Order {
     @Column(name="order_date")
     private LocalDate orderDate;
 
+    @OneToMany(mappedBy = "order")
+    private List<OrderDetails> orderDetails;
+
 }

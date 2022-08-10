@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 @Data
 @NoArgsConstructor
@@ -12,12 +14,19 @@ import javax.validation.constraints.NotNull;
 public class CreateCustomerRequest {
 
     @NotNull
+    @NotBlank
+    @Positive
     private String customerId;
 
     @NotNull
+    @NotBlank
     private String companyName;
 
+    @NotNull
+    @NotBlank
     private String contactName;
 
+    @NotNull
+    @NotBlank
     private String contactTitle;
 }

@@ -97,4 +97,14 @@ public class OrderDetailsManager implements OrderDetailsService {
 
         return new PageDataResponse<OrderDetailsListResponse>(response,pages.getTotalPages(),pages.getTotalElements(), pageNumber);
     }
+
+    @Override
+    public List<OrderDetailsListResponse> getOrderDetailsByProductId(int productId) {
+
+        List<OrderDetails> result = this.orderDetailsRepository.findOrderDetailsByProductId(productId);
+        List<OrderDetailsListResponse> response =
+                result.stream().map(orderDetails -> this.modelMapperService.forResponse().map(orderDetails, OrderDetailsListResponse.class)).collect(Collectors.toList());
+
+        return response;
+    }
 }

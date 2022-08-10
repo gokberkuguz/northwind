@@ -19,4 +19,5 @@ public interface OrderDetailsService {
 
     PageDataResponse<OrderDetailsListResponse> getByPageWithSorting(int pageNumber, int orderDetailsAmountInPage, String fieldName, boolean isAsc);
 
+    List<OrderDetailsListResponse> getOrderDetailsByProductId(int productId);
 }

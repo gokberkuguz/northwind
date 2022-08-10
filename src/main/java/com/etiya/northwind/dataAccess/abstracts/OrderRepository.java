@@ -10,4 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query("select a from Order a")
     Page<Order> findAllOrders(Pageable pageable);
+
+
 }
